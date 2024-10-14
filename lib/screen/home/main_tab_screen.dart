@@ -3,6 +3,8 @@ import 'package:medicare/common/color_extension.dart';
 import 'package:medicare/common_widget/menu_row.dart';
 import 'package:medicare/screen/home/home_tab_screen.dart';
 
+import 'notifications.dart'; // extra added file
+
 class MainTabScreen extends StatefulWidget {
   const MainTabScreen({super.key});
 
@@ -211,7 +213,12 @@ class _MainTabScreenState extends State<MainTabScreen>
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationsPage()),  // added redirect
+              );
+            },
             icon: const Icon(
               Icons.notifications,
               color: Colors.white,
