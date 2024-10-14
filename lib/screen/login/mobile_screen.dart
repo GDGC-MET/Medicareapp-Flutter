@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:fl_country_code_picker/fl_country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:medicare/common/color_extension.dart';
 import 'package:medicare/screen/login/otp_screen.dart';
 
@@ -11,37 +13,78 @@ class MobileScreen extends StatefulWidget {
 }
 
 class _MobileScreenState extends State<MobileScreen> {
-  FlCountryCodePicker countryCodePicker = const FlCountryCodePicker();
+  final FlCountryCodePicker countryCodePicker = const FlCountryCodePicker();
   late CountryCode countryCode;
+  final TextEditingController mobileController = TextEditingController();
+  bool isLoading = false; // Loading indicator
+  String? errorMessage; // Error message display
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     countryCode = countryCodePicker.countryCodes
         .firstWhere((element) => element.name == "India");
   }
+
+  Future<void> sendOtp(String phoneNumber) async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null; // Reset the error message
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://192.168.158.150:8585/api/login'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"mobileno": phoneNumber}),
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        print("OTP Sent");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OTPScreen(mobileNumber: phoneNumber),
+          ),
+        );
+      } else {
+        setState(() {
+          errorMessage = "Failed to send OTP. Please try again.";
+        });
+      }
+    } catch (e) {
+      print("Error: $e");
+      setState(() {
+        errorMessage = "An error occurred. Check your connection.";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: SizedBox(
-          width: context.width,
-          height: context.height,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(
-                height: context.width * 0.3,
-              ),
+              SizedBox(height: MediaQuery.of(context).size.width * 0.3),
               Image.asset(
                 "assets/img/color_logo.png",
-                width: context.width * 0.33,
+                width: MediaQuery.of(context).size.width * 0.33,
               ),
-              SizedBox(
-                height: context.width * 0.05,
-              ),
+              const SizedBox(height: 20),
               Text(
                 "Enter Mobile Number",
                 style: TextStyle(
@@ -50,22 +93,19 @@ class _MobileScreenState extends State<MobileScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               Text(
-                "The  verification code will send to the\nnumber",
+                "The verification code will be sent to the number",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: TColor.primaryText,
                   fontSize: 14,
                 ),
               ),
+              const SizedBox(height: 30),
               Container(
-                margin:
-                    const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 height: 45,
-                width: double.maxFinite,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
                   border: Border.all(
@@ -77,12 +117,12 @@ class _MobileScreenState extends State<MobileScreen> {
                   children: [
                     InkWell(
                       onTap: () async {
-                        final code = await countryCodePicker.showPicker(context: context);
-
+                        final code = await countryCodePicker.showPicker(
+                          context: context,
+                        );
                         if (code != null) {
-                          countryCode = code;
                           setState(() {
-                            
+                            countryCode = code;
                           });
                         }
                       },
@@ -99,7 +139,6 @@ class _MobileScreenState extends State<MobileScreen> {
                         alignment: Alignment.center,
                         child: Text(
                           countryCode.dialCode,
-                          textAlign: TextAlign.center,
                           style: TextStyle(
                             color: TColor.primaryText,
                             fontSize: 14,
@@ -107,14 +146,13 @@ class _MobileScreenState extends State<MobileScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      width: 15,
-                    ),
+                    const SizedBox(width: 15),
                     Expanded(
                       child: TextField(
+                        controller: mobileController,
+                        keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
+                          border: InputBorder.none,
                           hintText: "Ex: 9876543210",
                           hintStyle: TextStyle(
                             color: TColor.placeholder,
@@ -122,27 +160,46 @@ class _MobileScreenState extends State<MobileScreen> {
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
+              if (errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 child: InkWell(
-                  onTap: () {
-                    context.push( const OTPScreen() );
+                  onTap: isLoading
+                      ? null
+                      : () {
+                    final phoneNumber =
+                        '${mobileController.text.trim()}';
+                    if (mobileController.text.trim().isNotEmpty) {
+                      sendOtp(phoneNumber);
+                    } else {
+                      setState(() {
+                        errorMessage = "Please enter a valid number.";
+                      });
+                    }
                   },
                   child: Container(
-                    width: double.maxFinite,
+                    width: double.infinity,
                     height: 40,
                     decoration: BoxDecoration(
                       color: TColor.primary,
                       borderRadius: BorderRadius.circular(5),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
-                      "Continue",
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                      "Send OTP",
                       style: TextStyle(
                         color: Colors.blue,
                         fontSize: 14,
