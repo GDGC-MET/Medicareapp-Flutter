@@ -12,13 +12,118 @@ class SelectCityScreen extends StatefulWidget {
 class _SelectCityScreenState extends State<SelectCityScreen> {
   int selectIndex = 0;
 
+  List<String> cityCountryList = [
+    "New Delhi - India",
+    "Mumbai - India",
+    "Bengaluru (Bangalore) - India",
+    "Kolkata - India",
+    "Chennai - India",
+    "Hyderabad - India",
+    "Ahmedabad - India",
+    "Pune - India",
+    "Jaipur - India",
+    "Lucknow - India",
+    "Surat - India",
+    "Kanpur - India",
+    "Nagpur - India",
+    "Patna - India",
+    "Indore - India",
+    "Bhopal - India",
+    "Ludhiana - India",
+    "Agra - India",
+    "Vadodara - India",
+    "Nashik - India",
+    "New York City - United States",
+    "Los Angeles - United States",
+    "Chicago - United States",
+    "San Francisco - United States",
+    "Miami - United States",
+    "Washington, D.C. - United States",
+    "London - United Kingdom",
+    "Manchester - United Kingdom",
+    "Birmingham - United Kingdom",
+    "Edinburgh - United Kingdom",
+    "Paris - France",
+    "Marseille - France",
+    "Lyon - France",
+    "Toulouse - France",
+    "Tokyo - Japan",
+    "Osaka - Japan",
+    "Kyoto - Japan",
+    "Nagoya - Japan",
+    "Berlin - Germany",
+    "Munich - Germany",
+    "Frankfurt - Germany",
+    "Hamburg - Germany",
+    "Sydney - Australia",
+    "Melbourne - Australia",
+    "Brisbane - Australia",
+    "Perth - Australia",
+    "Moscow - Russia",
+    "Saint Petersburg - Russia",
+    "Kazan - Russia",
+    "Novosibirsk - Russia",
+    "Beijing - China",
+    "Shanghai - China",
+    "Guangzhou - China",
+    "Shenzhen - China",
+    "São Paulo - Brazil",
+    "Rio de Janeiro - Brazil",
+    "Brasília - Brazil",
+    "Salvador - Brazil",
+    "Dubai - United Arab Emirates",
+    "Abu Dhabi - United Arab Emirates",
+    "Sharjah - United Arab Emirates",
+    "Toronto - Canada",
+    "Montreal - Canada",
+    "Vancouver - Canada",
+    "Calgary - Canada",
+    "Rome - Italy",
+    "Milan - Italy",
+    "Naples - Italy",
+    "Florence - Italy",
+    "Mexico City - Mexico",
+    "Guadalajara - Mexico",
+    "Monterrey - Mexico",
+    "Puebla - Mexico",
+    "Seoul - South Korea",
+    "Busan - South Korea",
+    "Incheon - South Korea",
+    "Daegu - South Korea",
+    "Cairo - Egypt",
+    "Alexandria - Egypt",
+    "Giza - Egypt",
+    "Luxor - Egypt",
+    "Madrid - Spain",
+    "Barcelona - Spain",
+    "Valencia - Spain",
+    "Seville - Spain",
+    "Istanbul - Turkey",
+    "Ankara - Turkey",
+    "Izmir - Turkey",
+    "Bursa - Turkey",
+    "Buenos Aires - Argentina",
+    "Córdoba - Argentina",
+    "Rosario - Argentina",
+    "Mendoza - Argentina",
+    "Johannesburg - South Africa",
+    "Cape Town - South Africa",
+    "Durban - South Africa",
+    "Pretoria - South Africa",
+    "Singapore - Singapore",
+    "Kuala Lumpur - Malaysia",
+    "Bangkok - Thailand",
+    "Jakarta - Indonesia"
+  ];
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
         title: Text(
-          "Select City",
+          "Select City - Country",
           style: TextStyle(
             color: TColor.primaryTextW,
             fontSize: 16,
@@ -60,7 +165,7 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                   decoration: InputDecoration(
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    hintText: "Search your City",
+                    hintText: "Search your City - Country",
                     hintStyle:
                         TextStyle(color: TColor.placeholder, fontSize: 14),
                     prefixIcon: Icon(
@@ -85,7 +190,7 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                   width: 8,
                 ),
                 Text(
-                  "User Your Current Location",
+                  "Use Your Current Location",
                   style: TextStyle(
                     color: TColor.black,
                     fontSize: 14,
@@ -121,7 +226,7 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                           horizontal: 10, vertical: 10),
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "India",
+                        cityCountryList[index],      //change 1
                         style: TextStyle(
                           color: selectIndex == index
                               ? TColor.black
@@ -139,7 +244,7 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                   color: Colors.black26,
                   height: 1,
                 ),
-                itemCount: 25,
+                itemCount: cityCountryList.length, //change 2
               ),
             ),
           )
